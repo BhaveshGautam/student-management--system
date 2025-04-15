@@ -1,6 +1,6 @@
-const mongoose = import('mongoose');
-const User = import('./models/User'); 
-const Course = import ('./models/Course');
+import mongoose from 'mongoose';
+import User from'./User.js'; 
+import Course from './Course.js';
 
 const attendanceSchema = new mongoose.Schema({
   student: {

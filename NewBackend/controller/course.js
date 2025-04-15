@@ -1,7 +1,7 @@
-const Course = import("../models/Course");
+import Course from "../models/Course.js";
 
 // GET all courses with user emails
- export const getAllCoursesWithUsers = async (req, res) => {
+export const getAllCoursesWithUsers = async (req, res) => {
   try {
     const courses = await Course.find().populate("Users", "email");
     res.status(200).json({ courses }); // ⬅️ changed "Course" to "courses"
@@ -12,7 +12,7 @@ const Course = import("../models/Course");
 };
 
 // GET single course by ID
- export const getSingleCourse = async (req, res) => {
+export const getSingleCourse = async (req, res) => {
   try {
     const id = req.params.id; // ⬅️ fixed: directly use req.params.id
     const course = await Course.findById(id).populate("Users", "email");
@@ -29,7 +29,7 @@ const Course = import("../models/Course");
 };
 
 // UPDATE a course by ID
- export const updateCourse = async (req, res) => {
+export const updateCourse = async (req, res) => {
   try {
     const id = req.params.id;
     const course = await Course.findByIdAndUpdate(id, req.body, { new: true });
@@ -46,7 +46,7 @@ const Course = import("../models/Course");
 };
 
 // DELETE a course by ID
- export const deleteCourse = async (req, res) => {
+export const deleteCourse = async (req, res) => {
   try {
     const id = req.params.id;
     const deleted = await Course.findByIdAndDelete(id);
@@ -62,4 +62,3 @@ const Course = import("../models/Course");
   }
 };
 
-module.exports={getAllCoursesWithUsers, getSingleCourse,updateCourse,deleteCourse};

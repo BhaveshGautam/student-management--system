@@ -1,4 +1,4 @@
-const Course = import("../models/Course");
+import Course from "../models/Course.js";
  export const getCourseAttendance = async (req,res)=>{
     try {
         const id = req.params.courseId;
@@ -29,4 +29,3 @@ const Course = import("../models/Course");
       res.status(500).json({ message: "Server error" });
     }
   };
-  module .export={createCourse,getCourseAttendance};

@@ -1,5 +1,6 @@
- const mongoose = import('mongoose');
-const User = import('./models/User'); 
+import mongoose from 'mongoose';
+import User from './User.js'; 
+
 const courseSchema = new mongoose.Schema({
   name: {
     type: String,

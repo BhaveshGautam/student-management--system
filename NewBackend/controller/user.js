@@ -1,6 +1,6 @@
-const User = import('../models/User.js');
-const bcrypt = import('bcrypt');
-const jwt = import('jsonwebtoken');
+import User from '../models/User.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 // singup function
 export const signup = async (req, res) => {

@@ -1,5 +1,5 @@
-const express = import("express");
-import {getAllCoursesWithUsers,getSingleCourse,updateCourse,deleteCourse} from ("../controller/course").default;
+import express from "express"
+import {getAllCoursesWithUsers,getSingleCourse,updateCourse,deleteCourse} from "../controller/course.js";
 
 const router = express.Router();
 
@@ -8,4 +8,4 @@ router.get("/:id", getSingleCourse);
 router.put("/:id", updateCourse);
 router.delete("/:id", deleteCourse);
 
-module.exports = router;
+export default router;

@@ -2,74 +2,74 @@ import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-// singup function
+// SIGNUP
 export const signup = async (req, res) => {
     try {
-        const { Name, Email, Password, Section, Branch, year, RollNo } = req.body;
-        if (!Name || !Email || !Password || !Section || !Branch || !year || !RollNo || role) {
+        const { Name, Email, Password, section, Branch, year, RollNo, role } = req.body;
+
+        if (!Name || !Email || !Password || !section || !Branch || !year || !RollNo || !role) {
             return res.status(400).json({
                 success: false,
-                message: "kindly provide complete details"
-            })
+                message: "Kindly provide complete details"
+            });
         }
+
         const existingUser = await User.findOne({ Email });
-        // check kr rhe hai ki user exist krta bhi ya nahii
-        if (!existingUser) {
+        if (existingUser) {
             return res.status(400).json({
                 success: false,
                 message: "Email already exists"
             });
         }
 
-        // await mtlab ki jab tk hashing pura na ho tab tk next loc ni chlega 
-        // 10 means more iteration for strongly hashing the password 
-        const hashedPassword = await bcrypt.hash(Password, 10)
+        const hashedPassword = await bcrypt.hash(Password, 10);
 
-        if (!hashedPassword) {
-            return res.status(401).json({
-                success: false,
-                message: 'password did not hashed....'
-            })
-        }
-        // { bracket mei ek object paas kia hai jo database m save ho jaye}
-        // await means jab tk data create hokr databse mei save na ho tab tk code ruka 
-        // rhega then response mei store hoga 
-        const response = await User.create({ Name, Email, password: hashedPassword })
+        const user = await User.create({
+            Name,
+            Email,
+            password: hashedPassword,
+            section,
+            Branch,
+            year,
+            RollNo,
+            role
+        });
 
         res.status(200).json({
             success: true,
-            message: 'acount created successfully...',
-            response: data,
-            // yha pr vo data return as response hoga jo user.create krta hai database mei 
-        })
-    }
-    catch {
+            message: 'Account created successfully',
+            data: user
+        });
+
+    } catch (error) {
+        console.error(error);
         res.status(500).json({
             success: false,
             message: 'Internal server error'
         });
     }
 };
-// login function 
+
+// LOGIN
 export const login = async (req, res) => {
     try {
         const { Email, Password, role } = req.body;
-        if (!Email || !Password || role) {
+
+        if (!Email || !Password || !role) {
             return res.status(400).json({
                 success: false,
-                message: "kindly provide complete details"
+                message: "Kindly provide complete details"
             });
         }
-        // check kr rhe hai ki user exist krta bhi ya nahii
+
         const existingUser = await User.findOne({ Email });
         if (!existingUser) {
             return res.status(400).json({
                 success: false,
                 message: "User does not exist"
             });
-
         }
-        // hashing krne ke liye password ko extract kr rhe hai
+
         const isValidPassword = await bcrypt.compare(Password, existingUser.password);
         if (!isValidPassword) {
             return res.status(400).json({
@@ -77,22 +77,23 @@ export const login = async (req, res) => {
                 message: "Invalid password"
             });
         }
-        const payload =
-        {
-            email: User.email
-        }
 
-        // token generate krne ke liye
+        const payload = {
+            email: existingUser.Email,
+            role: existingUser.role,
+            id: existingUser._id
+        };
 
-        let token = jwt.sign(payload, process.env.jwt_secret, { expiresIn: '3h' })
+        const token = jwt.sign(payload, process.env.jwt_secret, { expiresIn: '3h' });
+
         res.status(200).json({
             success: true,
-            message: 'login successful', // means token return hogya used for login
-            token: token,
-            User
-        })
-    }
-    catch {
+            message: 'Login successful',
+            token,
+            user: existingUser
+        });
+    } catch (error) {
+        console.error(error);
         res.status(500).json({
             success: false,
             message: 'Internal server error'
@@ -100,6 +101,7 @@ export const login = async (req, res) => {
     }
 };
 
+// MIDDLEWARE: isStudent
 export const isStudent = (req, res, next) => {
     try {
         const role = req.user.role;
@@ -107,61 +109,57 @@ export const isStudent = (req, res, next) => {
         if (!role) {
             return res.status(500).json({
                 success: false,
-                message: "failed to find role .....",
+                message: "Role not found"
             });
         }
 
         if (role !== "Student") {
-            return res.status(500).json({
+            return res.status(403).json({
                 success: false,
-                message: "You are not student....",
+                message: "Access denied: You are not a student"
             });
         }
 
-        next()
-
+        next();
     } catch (err) {
         return res.status(500).json({
             success: false,
-            message: "failed to authorise student .....",
+            message: "Failed to authorize student"
         });
     }
 };
 
+// MIDDLEWARE: isAdmin
 export const isAdmin = (req, res, next) => {
     try {
-        const role = req.user.role
+        const role = req.user.role;
 
         if (!role) {
             return res.status(500).json({
                 success: false,
-                message: "failed to find role .....",
+                message: "Role not found"
             });
         }
 
         if (role !== "Admin") {
-            return res.status(500).json({
+            return res.status(403).json({
                 success: false,
-                message: "You are not Admin....",
+                message: "Access denied: You are not an admin"
             });
         }
 
-        next()
-
-
+        next();
     } catch (err) {
-        console.log(err)
+        console.error(err);
         return res.status(500).json({
             success: false,
-            message: "failed to authorise Admin .....",
+            message: "Failed to authorize admin"
         });
-
     }
 };
 
-
-export function enrollStudent(courseId, studentId) {
-    const course = course.find(course => course.id === courseId);
+export function enrollStudent(courses, courseId, studentId) {
+    const course = courses.find(course => course.id === courseId);
 
     if (!course) {
         console.log("Course not found");
@@ -175,4 +173,4 @@ export function enrollStudent(courseId, studentId) {
 
     course.students.push(studentId);
     console.log(`Student ${studentId} enrolled in course ${courseId}`);
-};
+}

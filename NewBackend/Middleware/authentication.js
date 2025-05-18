@@ -2,7 +2,7 @@ const dotenv = import("dotenv");
 dotenv.config();
 
 const jwt = import("jsonwebtoken");
-const admin = import("./models/admin");
+const admin= import("./models/admin.js");
 
  export const auth = async (req, res, next) => {
   try {

@@ -3,37 +3,55 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+// yha bs import kia haii 
 import authRouter from './routes/auth.route.js';
 import userRouter from './routes/user.route.js';
 import courseRouter from './routes/course.route.js';
 
 dotenv.config();
 
+if (!process.env.MONGO_URI) {
+  throw new Error("❌ MONGO_URI is not defined in the .env file");
+}
+
 const app = express();
 
+// Middleware
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
-    credentials: true
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser());
 
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-    .then(() => console.log('✅ MongoDB connected successfully'))
-    .catch((err) => console.error(' MongoDB connection error:', err));
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ MongoDB connected successfully'))
+  .catch((err) => {
+    console.error('❌ MongoDB connection error:', err);
+    process.exit(1); // Exit process if DB fails
+  });
+
+  //yha pr router ko path dia haii
+ const authRouter = require("./routes/auth.route");
+const courseRouter = require("./routes/course.route");
+const userRouter = require("./routes/user.route");
+
+// yha routers ko use kia haii 
 
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/courses', courseRouter);
 
 app.get('/', (req, res) => {
-    res.send('🎓 Student Management System API Running...');
+  res.send('🎓 Student Management System API Running...');
 });
 
-const PORT = process.env.PORT || 4000;
+app.use((err, req, res, next) => {
+  console.error('🔥 Server Error:', err);
+  res.status(500).json({ message: 'Internal Server Error' });
+});
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

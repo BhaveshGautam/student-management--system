@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import User from './User.js'; 
 
 const courseSchema = new mongoose.Schema({
-  name: {
+  title: {
     type: String,
     required: true,
   },

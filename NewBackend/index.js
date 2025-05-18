@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-// yha bs import kia haii 
 import authRouter from './routes/auth.route.js';
 import userRouter from './routes/user.route.js';
 import courseRouter from './routes/course.route.js';
@@ -30,14 +29,7 @@ mongoose.connect(process.env.MONGO_URI)
     console.error('❌ MongoDB connection error:', err);
     process.exit(1); // Exit process if DB fails
   });
-
-  //yha pr router ko path dia haii
- const authRouter = require("./routes/auth.route");
-const courseRouter = require("./routes/course.route");
-const userRouter = require("./routes/user.route");
-
-// yha routers ko use kia haii 
-
+  
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/courses', courseRouter);

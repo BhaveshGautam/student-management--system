@@ -15,7 +15,7 @@ export const signup = async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email }); 
+    const existingUser = await User.findOne({ email });
     // console.log("🔍 existingUser:", existingUser);
 
     if (existingUser) {
@@ -67,7 +67,7 @@ export const login = async (req, res) => {
         message: "Kindly provide complete details"
       });
     }
-     // finding  the user
+    // finding  the user
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
       return res.status(400).json({
@@ -75,7 +75,7 @@ export const login = async (req, res) => {
         message: "User does not exist"
       });
     }
-     // comparing password
+    // comparing password
     const isValidPassword = await bcrypt.compare(password, existingUser.password);
     if (!isValidPassword) {
       return res.status(400).json({
@@ -110,59 +110,59 @@ export const login = async (req, res) => {
 
 // MIDDLEWARE: isStudent
 export const isStudent = (req, res, next) => {
-    try {
-        const role = req.user.role;
+  try {
+    const role = req.user.role;
 
-        if (!role) {
-            return res.status(500).json({
-                success: false,
-                message: "Role not found"
-            });
-        }
-
-        if (role !== "Student") {
-            return res.status(403).json({
-                success: false,
-                message: "Access denied: You are not a student"
-            });
-        }
-
-        next();
-    } catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to authorize student"
-        });
+    if (!role) {
+      return res.status(500).json({
+        success: false,
+        message: "Role not found"
+      });
     }
+
+    if (role !== "Student") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied: You are not a student"
+      });
+    }
+
+    next();
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to authorize student"
+    });
+  }
 };
 
 // MIDDLEWARE: isAdmin
 export const isAdmin = (req, res, next) => {
-    try {
-        const role = req.user.role;
+  try {
+    const role = req.user.role;
 
-        if (!role) {
-            return res.status(500).json({
-                success: false,
-                message: "Role not found"
-            });
-        }
-
-        if (role !== "Admin") {
-            return res.status(403).json({
-                success: false,
-                message: "Access denied: You are not an admin"
-            });
-        }
-
-        next();
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Failed to authorize admin"
-        });
+    if (!role) {
+      return res.status(500).json({
+        success: false,
+        message: "Role not found"
+      });
     }
+
+    if (role !== "Admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied: You are not an admin"
+      });
+    }
+
+    next();
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to authorize admin"
+    });
+  }
 };
 
 export const enrollStudent = async (req, res) => {

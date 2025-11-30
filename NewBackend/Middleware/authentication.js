@@ -2,9 +2,9 @@ const dotenv = import("dotenv");
 dotenv.config();
 
 const jwt = import("jsonwebtoken");
-const admin= import("./models/admin.js");
+const admin = import("./models/admin.js");
 
- export const auth = async (req, res, next) => {
+export const auth = async (req, res, next) => {
   try {
     const token =
       (req.headers.authorization && req.headers.authorization.split(' ')[1]) || req.cookies.token || req.body.token || req.query.token;
